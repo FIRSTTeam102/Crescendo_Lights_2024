@@ -90,7 +90,7 @@ void loop() {
   
 
   //do a different pattern for each mode.
- int mode = 2;
+ mode = readInput();
  
  switch (mode){         
         case 0:
