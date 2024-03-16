@@ -90,71 +90,71 @@ void loop() {
   
 
   //do a different pattern for each mode.
- mode = readInput();
- 
- switch (mode){         
-        case 0:
-          //Shooting EMPTY GREEN
-          strip.clear();
-          strip.show();
-          delay(5);
-          rgbColor = strip.Color(0,255,0);
-          colorWipe(rgbColor, 70);
-          Serial.println("Im over here-");
-          break;          
-        case 1:
-        //Intaking TRAIL ORANGE
-          //call the cometChase function defined after loop()
-          //HSV orange comet chase pattern
-          cometChase(4900, 10, 50);
-          break;
-        case 2:
-        //Disabled
-          rainbow(10);
-          break;
-        case 3:
-        //Auto  WHITE FLASH 
-					theaterChase(12098765,50);
-					strip.show();
-        		delay(100);
-        	break;
-      
-        case 4:
-        //We can Shoot SOLID GREEN
-        	strip.fill(strip.Color(0,255,0),0,90);
-        	strip.show();
-        		delay(100);
-        	break;
-
-        case 5:
-        //Teleop RED ALLIANCE 
-        	strip.fill(strip.Color(255,0,0),0,90);
-        	strip.show();
-        		delay(100);
-        	break;
-
-        case 6: 
-        	//Teleop BLUE ALLIANCE
-        	strip.fill(strip.Color(0,0,255),0,90);
-        	strip.show();
-        		delay(100);
-        		break;
-
-       case 7:
-       //Climb TRAILING PURPLE
-       	cometChase(0xcfef, 20, 50);
-       	break;
-
-       case 8:
-				//Have a note WHITE FADE
-				strip.fill(strip.Color(255,255,255),0,90);
-					strip.show();
-					delay(5000);
-				breathe(30,100,100);
-				break;
-       	    		
-        
- }
+	 mode = readInput();
+	 Serial.println(mode);
+	 switch (mode){         
+	        case 0:
+	          //Shooting EMPTY GREEN
+	          strip.clear();
+	          strip.show();
+	          delay(5);
+	          rgbColor = strip.Color(0,255,0);
+	          colorWipe(rgbColor, 70);
+	          Serial.println("Im over here-");
+	          break;          
+	        case 1:
+	        //Intaking TRAIL ORANGE
+	          //call the cometChase function defined after loop()
+	          //HSV orange comet chase pattern
+	          cometChase(4900, 10, 50);
+	          break;
+	        case 2:
+	        //Disabled
+	          rainbow(10);
+	          break;
+	        case 3:
+	        //Auto  WHITE FLASH 
+						theaterChase(12098765,50);
+						strip.show();
+	        		delay(100);
+	        	break;
+	      
+	        case 4:
+	        //We can Shoot SOLID GREEN
+	        	strip.fill(strip.Color(0,255,0),0,90);
+	        	strip.show();
+	        		delay(100);
+	        	break;
+	
+	        case 5:
+	        //Teleop RED ALLIANCE 
+	        	strip.fill(strip.Color(255,0,0),0,90);
+	        	strip.show();
+	        		delay(100);
+	        	break;
+	
+	        case 6: 
+	        	//Teleop BLUE ALLIANCE
+	        	strip.fill(strip.Color(0,0,255),0,90);
+	        	strip.show();
+	        		delay(100);
+	        		break;
+	
+	       case 7:
+	       //Climb TRAILING PURPLE
+	       	cometChase(0xcfef, 20, 50);
+	       	break;
+	
+	       case 8:
+					//Have a note WHITE FADE
+					strip.fill(strip.Color(255,255,255),0,90);
+						strip.show();
+						delay(5000);
+					breathe(30,100,100);
+					break;
+	       	    		
+	        
+	 }
   
 }
 
@@ -266,16 +266,16 @@ void breathe(int hue,int saturation, int value) {
 		
 
 	int readInput(){
-		digitFirst= digitalRead(10);
-		digitSecond= digitalRead(11);
-		digitThird = digitalRead(12);
-		digitFourth = digitalRead(13);
+		int digitFirst= digitalRead(10);
+		int digitSecond= digitalRead(11);
+		int digitThird = digitalRead(12);
+		int digitFourth = digitalRead(13);
 	
 		
+		Serial.print(digitFourth);
 		Serial.print(digitThird);
 		Serial.print(digitSecond);
 		Serial.println(digitFirst);
-		Serial.println(digitFourth);
 
 		return(digitFourth*8 + digitThird*4 + digitSecond*2 + digitFirst*1);
 	}
