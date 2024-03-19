@@ -11,7 +11,7 @@
  *    many of the light patterns found in this project are taken from
  *    adafruit neopixel example code.
  */
-#define PIXEL_PIN    3
+#define PIXEL_PIN    7
 #define PIXEL_COUNT  90
 Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, NEO_GRB );
 
@@ -81,16 +81,9 @@ void loop() {
   uint32_t rgbColor = 0;
   Serial.println("\n*********Start of Loop ****************************");
 
-  	int inputPattern = 0;
-		//inputPattern = readInput();
-		Serial.print("read in:");
-		Serial.println(inputPattern);
-		delay(10);
-    
-  
-
   //do a different pattern for each mode.
 	 mode = readInput();
+	 Serial.print("New mode: ");
 	 Serial.println(mode);
 	 switch (mode){         
 	        case 0:
@@ -110,7 +103,7 @@ void loop() {
 	          break;
 	        case 2:
 	        //Disabled
-	          rainbow(10);
+	          rainbow(0);
 	          break;
 	        case 3:
 	        //Auto  WHITE FLASH 
@@ -152,6 +145,9 @@ void loop() {
 						delay(5000);
 					breathe(30,100,100);
 					break;
+					
+					default:
+					  theaterChase(strip.Color(200,1,160), 50);
 	       	    		
 	        
 	 }
@@ -190,7 +186,7 @@ void rainbow(int wait) {
     // Above line is equivalent to:
     // strip.rainbow(firstPixelHue, 1, 255, 255, true);
     strip.show(); // Update strip with new contents
-    delay(5);  // Pause for a moment
+      // Pause for a moment
   }
 }
 
@@ -266,16 +262,20 @@ void breathe(int hue,int saturation, int value) {
 		
 
 	int readInput(){
-		int digitFirst= digitalRead(10);
-		int digitSecond= digitalRead(11);
-		int digitThird = digitalRead(12);
-		int digitFourth = digitalRead(13);
+		int digitFirst= digitalRead(13);
+		int digitSecond= digitalRead(12);
+		int digitThird = digitalRead(11);
+		int digitFourth = digitalRead(10);
 	
 		
+		Serial.print("Left to Right: ");
 		Serial.print(digitFourth);
+		Serial.print(" ");
 		Serial.print(digitThird);
+		Serial.print(" ");
 		Serial.print(digitSecond);
+		Serial.print(" ");
 		Serial.println(digitFirst);
 
-		return(digitFourth*8 + digitThird*4 + digitSecond*2 + digitFirst*1);
+		return(digitFourth*8 + digitThird*4 + digitSecond*2 + digitFirst);
 	}
