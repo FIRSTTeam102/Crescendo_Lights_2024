@@ -63,6 +63,9 @@ void setup() {
 //mode is global - keep track of it outside the loop
 int mode = 0;
 
+//Start the rainbow pattern at Hue 0 and then just keep cycling
+//to the next hue when you call the rainbow pattern 
+long currFirstPixelHue = 0;
 /*
  * loop is executed over & over in arduino sketches
  * for each iteration of loop():
@@ -86,70 +89,78 @@ void loop() {
 	 Serial.print("New mode: ");
 	 Serial.println(mode);
 	 switch (mode){         
-	        case 0:
-	          //Shooting EMPTY GREEN
-	          strip.clear();
-	          strip.show();
-	          delay(5);
-	          rgbColor = strip.Color(0,255,0);
-	          colorWipe(rgbColor, 70);
-	          Serial.println("Im over here-");
-	          break;          
-	        case 1:
+	    case 0:
+	        //Shooting EMPTY GREEN
+			Serial.println("case 0: Wipe Green");
+	        strip.clear();
+	        strip.show();
+	        delay(5);
+	        rgbColor = strip.Color(0,255,0);
+	        colorWipe(rgbColor, 70);
+	    break;          
+	    case 1:
 	        //Intaking TRAIL ORANGE
-	          //call the cometChase function defined after loop()
-	          //HSV orange comet chase pattern
-	          cometChase(4900, 10, 50);
-	          break;
-	        case 2:
+	        //call the cometChase function defined after loop()
+	        //HSV orange comet chase pattern
+	        cometChase(4900, 10, 50);
+	    break;
+	    case 2:
 	        //Disabled
-	          rainbow(0);
-	          break;
-	        case 3:
+			//the rainbow hues are HSV 0 - 65536 fill each
+			//pixel in the strip with the next hue & keep increasing
+			//the pixel hue every time you call this mode to keep the
+			//rainbow cycling.
+			strip.rainbow(currFirstPixelHue);
+			strip.show();
+			if (currFirstPixelHue < 2*65536){
+				currFirstPixelHue +=256;
+			}
+			else currFirstPixelHue = 0;
+	    break;
+	    case 3:
 	        //Auto  WHITE FLASH 
-						theaterChase(12098765,50);
-						strip.show();
-	        		delay(100);
-	        	break;
+			theaterChase(12098765,50);
+			strip.show();
+	        delay(100);
+	    break;
 	      
-	        case 4:
+	    case 4:
 	        //We can Shoot SOLID GREEN
-	        	strip.fill(strip.Color(0,255,0),0,90);
-	        	strip.show();
-	        		delay(100);
-	        	break;
+	        strip.fill(strip.Color(0,255,0),0,90);
+	        strip.show();
+	        delay(100);
+	    break;
 	
-	        case 5:
+	    case 5:
 	        //Teleop RED ALLIANCE 
-	        	strip.fill(strip.Color(255,0,0),0,90);
-	        	strip.show();
-	        		delay(100);
-	        	break;
+	        strip.fill(strip.Color(255,0,0),0,90);
+	        strip.show();
+	        delay(100);
+	    break;
 	
-	        case 6: 
-	        	//Teleop BLUE ALLIANCE
-	        	strip.fill(strip.Color(0,0,255),0,90);
-	        	strip.show();
-	        		delay(100);
-	        		break;
+	    case 6: 
+	        //Teleop BLUE ALLIANCE
+	        strip.fill(strip.Color(0,0,255),0,90);
+	        strip.show();
+	        delay(100);
+	    break;
 	
-	       case 7:
+	    case 7:
 	       //Climb TRAILING PURPLE
 	       	cometChase(0xcfef, 20, 50);
-	       	break;
+	    break;
 	
-	       case 8:
-					//Have a note WHITE FADE
-					strip.fill(strip.Color(255,255,255),0,90);
-						strip.show();
-						delay(5000);
-					breathe(30,100,100);
-					break;
+	    case 8:
+			//Have a note WHITE FADE
+			strip.fill(strip.Color(255,255,255),0,90);
+			strip.show();
+			delay(5000);
+			breathe(30,100,100);
+		break;
 					
-					default:
-					  theaterChase(strip.Color(200,1,160), 50);
+		default:
+			theaterChase(strip.Color(200,1,160), 50);
 	       	    		
-	        
 	 }
   
 }
@@ -170,7 +181,8 @@ void colorWipe(uint32_t color, int wait) {
   }
 }
 
-// Rainbow cycle along whole strip. Pass delay time (in ms) between frames.
+// Rainbow cycle along whole strip. Pass delay time (in ms) between frames
+
 void rainbow(int wait) {
   // Hue of first pixel runs 2 complete loops through the color wheel.
   // Color wheel has a range of 65536 but it's OK if we roll over, so
@@ -240,14 +252,14 @@ void cometChase(uint16_t hsvColor, int tailLen, int delayTime){
 
 }
 
-
-
+//breath takes 255 steps to go from off to bright & 255 more to go 
+//from bright to off
 void breathe(int hue,int saturation, int value) {
-	for (int i = 0; i < 255; i--) {
+	for (int i = 0; i < 255; i++) {
 		strip.fill(strip.gamma32(strip.ColorHSV(hue, saturation, i)));
 		strip.show();
 	}
-	for (int i = 255; i > 0; i++) {
+	for (int i = 255; i > 0; i--) {
 		strip.fill(strip.gamma32(strip.ColorHSV(hue, saturation, i)));
 		strip.show();
 	}
