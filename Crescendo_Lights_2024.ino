@@ -3,10 +3,6 @@
 
 
 /*************************************************************
- * gemmaTouch - aka the team 102 spirit pin project
- *    uses the Adafruit gemma M0 board and a neopixel light ring
- *    to create a wearable spirit pin for team 102 members to wear
- *    at competitions.
  *    
  *    many of the light patterns found in this project are taken from
  *    adafruit neopixel example code.
@@ -18,13 +14,7 @@ Adafruit_NeoPixel strip(PIXEL_COUNT, PIXEL_PIN, NEO_GRB );
 int digitFirst = 0;
 int digitSecond = 0;
 int digitThird = 0; 
-int digitFourth = 0;
-
-
-
-
-
-//create the neopixel ring 
+int digitFourth = 0; 
 
 /*
  * initialize the serial monitor for debuggin, the neopixel ring &
@@ -32,31 +22,32 @@ int digitFourth = 0;
  *   board is powered up or reset.
  */
 void setup() {
-			pinMode(10,INPUT);
-			pinMode(11,INPUT);
-			pinMode(12,INPUT);
-			pinMode(13,INPUT);
-			Serial.begin(9600);
+	//set up the DIO - directly connected to the roborio
+	pinMode(10,INPUT);
+	pinMode(11,INPUT);
+	pinMode(12,INPUT);
+	pinMode(13,INPUT);
+	Serial.begin(9600);
 
   //initialize the serial monitor for debugging
-  Serial.begin(9600);
+	Serial.begin(9600);
   //when debugging, start the serial monitor before uploading the sketch or
   //  you won't see these lines.
-  Serial.println("Light strip patterns");
+	Serial.println("Light strip patterns");
  
-  strip.begin(); // Initialize NeoPixel strip object (REQUIRED)
-  strip.setBrightness(100);
+	strip.begin(); // Initialize NeoPixel strip object (REQUIRED)
+	strip.setBrightness(100);
 
   //set all pixels to 'off'
-  strip.clear();
-  strip.show();
+	strip.clear();
+	strip.show();
   
  
 }
 
 //The main loop of the sketch
-//Read the capacitive touch sensor. Treat it like a button press
-//Each time the sensor is touched, change the neopixel pattern
+//Read the digital IO conviert the binary
+//digits to an integer and change the neopixel pattern
 //according to the mode
 
 
@@ -66,18 +57,13 @@ int mode = 0;
 //Start the rainbow pattern at Hue 0 and then just keep cycling
 //to the next hue when you call the rainbow pattern 
 long currFirstPixelHue = 0;
+int currStartPixel = 0;
 /*
  * loop is executed over & over in arduino sketches
  * for each iteration of loop():
- *   - read the capacitive touch sensor, if it registers a high number it's being touched, so update
- *      the mode, otherwise keep the current mode
+ *   - read the digital IO pins, 
  *   - modes start at 0 & are updated 1 time at the start of loop
- *   - the switch/case statement executes a different light pattern for each mode. Some light patterns like
- *     the rainbow have loops that take a while to execute, so they don't react immediately to the cap touch
- *     sensor press (an interrupt could solve this problem, but it's a more advanced topic)
- *    
- * Modify the code below to change colors & create new patterns. Remove and add modes as you like.
- * have fun & ask a mentor or team mate for help if needed.
+ *   - the switch/case statement executes a different light pattern for each mode.
  */
 void loop() {
  
@@ -86,7 +72,7 @@ void loop() {
 
   //do a different pattern for each mode.
 	 mode = readInput();
-	 Serial.print("New mode: ");
+	 Serial.print("Current mode: ");
 	 Serial.println(mode);
 	 switch (mode){         
 	    case 0:
@@ -102,7 +88,11 @@ void loop() {
 	        //Intaking TRAIL ORANGE
 	        //call the cometChase function defined after loop()
 	        //HSV orange comet chase pattern
-	        cometChase(4900, 10, 50);
+	        cometChase(4900, currStartPixel, 10, 50);
+			if (currStartPixel >= strip.numPixels()) {
+				currStartPixel = 0;
+			}
+			else currStartPixel++;
 	    break;
 	    case 2:
 	        //Disabled
@@ -147,7 +137,11 @@ void loop() {
 	
 	    case 7:
 	       //Climb TRAILING PURPLE
-	       	cometChase(0xcfef, 20, 50);
+	       	cometChase(0xcfef, currStartPixel, 10, 50);
+			if (currStartPixel >= strip.numPixels()){
+				currStartPixel = 0;
+			}
+			else currStartPixel++;
 	    break;
 	
 	    case 8:
@@ -219,20 +213,22 @@ void theaterChase(uint32_t color, int wait) {
   }
 }
 
-//comet chase - chases starts with one bright light & then dims each light for
-// the length of the tail. HSV - hue, saturation, value are used to make this easier,
-// because it allows us to just modify value, keeping the color the same. gamma32 is
-// necessary for color correction as the value dims. The neopixels are cleared after
-// each round to take of the tail when the outer loop finishes (not the most elegant solution
-// for fixing the tail)
-void cometChase(uint16_t hsvColor, int tailLen, int delayTime){
-   uint32_t rgbcolor;
-   int dimFactor = 255/tailLen;
-   int brightness =255;
-   int currPixel;
-   for (int i = 0; i < strip.numPixels(); i++){
-      brightness = 255;
-      for (int j = 0; j <= tailLen; j++){
+//comet chase - 
+// forms a comet chase pattern if called multiple times. This method shows one comet
+// with a fading tail starting with the startPixel, allowing it to be quickly 
+// interrupted if a new pattern is called for.
+//HSV - hue, saturation, value are used to make the fade easier,
+// because it allows a dim on the same color. gamma32 is
+// necessary for color correction as the value dims.
+//
+void cometChase(uint16_t hsvColor, int startPixel, int tailLen, int delayTime){
+	uint32_t rgbcolor;
+	int dimFactor = 255/tailLen;
+	int brightness =255;
+	int currPixel;
+	int i = startPixel;
+    
+	for (int j = 0; j <= tailLen; j++){
         currPixel = i-j;
         if (j == tailLen){
           brightness = 0;
@@ -241,15 +237,12 @@ void cometChase(uint16_t hsvColor, int tailLen, int delayTime){
           brightness = brightness - dimFactor;
         }
         rgbcolor = strip.gamma32(strip.ColorHSV(hsvColor, 255, brightness));
-        strip.setPixelColor(currPixel,rgbcolor);
-        
-      }
-      strip.show();
-      delay(delayTime);
-   }
-   strip.clear();
-   strip.show();
-
+        strip.setPixelColor(currPixel,rgbcolor);     
+    }
+	//make sure the 0 to the comet pixels are off
+	strip.fill(strip.Color(0,0,0),0,i-tailLen-1);
+    strip.show();
+    delay(delayTime);
 }
 
 //breath takes 255 steps to go from off to bright & 255 more to go 
@@ -265,29 +258,22 @@ void breathe(int hue,int saturation, int value) {
 	}
 }
 
-
-
-
+//Read the mode as a binary digit from
+//from the DIO pins and return the decimal integer. 
+int readInput(){
+	int digitFirst= digitalRead(13);
+	int digitSecond= digitalRead(12);
+	int digitThird = digitalRead(11);
+	int digitFourth = digitalRead(10);
 		
-			
-	
-		
+	Serial.print("Left to Right: ");
+	Serial.print(digitFourth);
+	Serial.print(" ");
+	Serial.print(digitThird);
+	Serial.print(" ");
+	Serial.print(digitSecond);
+	Serial.print(" ");
+	Serial.println(digitFirst);
 
-	int readInput(){
-		int digitFirst= digitalRead(13);
-		int digitSecond= digitalRead(12);
-		int digitThird = digitalRead(11);
-		int digitFourth = digitalRead(10);
-	
-		
-		Serial.print("Left to Right: ");
-		Serial.print(digitFourth);
-		Serial.print(" ");
-		Serial.print(digitThird);
-		Serial.print(" ");
-		Serial.print(digitSecond);
-		Serial.print(" ");
-		Serial.println(digitFirst);
-
-		return(digitFourth*8 + digitThird*4 + digitSecond*2 + digitFirst);
-	}
+	return(digitFourth*8 + digitThird*4 + digitSecond*2 + digitFirst);
+}
