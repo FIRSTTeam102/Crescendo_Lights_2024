@@ -170,14 +170,14 @@ void loop() {
 // strip.Color(red, green, blue) as shown in the loop() function above),
 // and a delay time (in milliseconds) between pixels.
 void colorWipe(uint32_t color, int wait) {
-	strip.fill(color,0,90);
+	strip.fill(color,0,strip.numPixels());
 	strip.show();
 	delay(5);
-  for(int i=strip.numPixels(); i>=0; i--) { // For each pixel in strip...
-    strip.setPixelColor(i, 0);         //  Set pixel's color (in RAM)
-    strip.show();                          //  Update strip to match
-    delay(15);                           //  Pause for a moment
-  }
+	for(int i=strip.numPixels(); i>=0; i--) { // For each pixel in strip...
+    	strip.setPixelColor(i, 0);         //  Set pixel's color (in RAM)
+    	strip.show();                          //  Update strip to match
+    	delay(15);                           //  Pause for a moment
+  	}
 }
 
 
