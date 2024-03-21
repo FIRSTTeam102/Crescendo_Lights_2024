@@ -53,6 +53,7 @@ void setup() {
 
 //mode is global - keep track of it outside the loop
 int mode = 0;
+int prevMode = 0;
 
 //Start the rainbow pattern at Hue 0 and then just keep cycling
 //to the next hue when you call the rainbow pattern 
@@ -74,13 +75,18 @@ void loop() {
 	 mode = readInput();
 	 Serial.print("Current mode: ");
 	 Serial.println(mode);
+	 if (prevMode != mode){
+		//reset lights & patterns if we change modes
+		strip.clear();
+		strip.show();
+		currFirstPixelHue = 0;
+		currStartPixel = 0;
+	 }
 	 switch (mode){         
 	    case 0:
 	        //Shooting EMPTY GREEN
 			Serial.println("case 0: Wipe Green");
-	        strip.clear();
-	        strip.show();
-	        delay(5);
+	        //set strip to green & then turn off 1 at a time
 	        rgbColor = strip.Color(0,255,0);
 	        colorWipe(rgbColor, 70);
 	    break;          
@@ -110,7 +116,6 @@ void loop() {
 	    case 3:
 	        //Auto  WHITE FLASH 
 			theaterChase(12098765,50);
-			strip.show();
 	        delay(100);
 	    break;
 	      
@@ -148,7 +153,7 @@ void loop() {
 			//Have a note WHITE FADE
 			strip.fill(strip.Color(255,255,255),0,90);
 			strip.show();
-			delay(5000);
+			delay(500);
 			breathe(30,100,100);
 		break;
 					
@@ -175,26 +180,6 @@ void colorWipe(uint32_t color, int wait) {
   }
 }
 
-// Rainbow cycle along whole strip. Pass delay time (in ms) between frames
-
-void rainbow(int wait) {
-  // Hue of first pixel runs 2 complete loops through the color wheel.
-  // Color wheel has a range of 65536 but it's OK if we roll over, so
-  // just count from 0 to 2*65536. Adding 256 to firstPixelHue each time
-  // means we'll make 2*65536/256 = 512 passes through this loop:
-  for(long firstPixelHue = 0; firstPixelHue < 2*65536; firstPixelHue += 256) {
-    // strip.rainbow() can take a single argument (first pixel hue) or
-    // optionally a few extras: number of rainbow repetitions (default 1),
-    // saturation and value (brightness) (both 0-255, similar to the
-    // ColorHSV() function, default 255), and a true/false flag for whether
-    // to apply gamma correction to provide 'truer' colors (default true).
-    strip.rainbow(firstPixelHue);
-    // Above line is equivalent to:
-    // strip.rainbow(firstPixelHue, 1, 255, 255, true);
-    strip.show(); // Update strip with new contents
-      // Pause for a moment
-  }
-}
 
 // Theater-marquee-style chasing lights. Pass in a color (32-bit value,
 // a la strip.Color(r,g,b) as mentioned above), and a delay time (in ms)
