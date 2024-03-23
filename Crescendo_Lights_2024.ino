@@ -99,7 +99,7 @@ void loop() {
 	        //Intaking TRAIL ORANGE
 	          //call the cometChase function defined after loop()
 	          //HSV orange comet chase pattern
-	          cometChase(4900, 10, 50);
+	          cometChase(4900, 35, 5);
 	          break;
 	        case 2:
 	        //Disabled
@@ -142,7 +142,6 @@ void loop() {
 					//Have a note WHITE FADE
 					strip.fill(strip.Color(255,255,255),0,90);
 						strip.show();
-						delay(5000);
 					breathe(30,100,100);
 					break;
 					
