@@ -92,15 +92,11 @@ void loop() {
 	    break;          
 	    case 1:
 	        //Intaking TRAIL ORANGE
-	        //call the cometChase function defined after loop()
-	        //HSV orange comet chase pattern
-	        cometChase(4900, currStartPixel, 10, 50);
-			if (currStartPixel >= strip.numPixels()) {
-				currStartPixel = 0;
-			}
-			else currStartPixel++;
-	    break;
-	    case 2:
+	          //call the cometChase function defined after loop()
+	          //HSV orange comet chase pattern
+	          cometChase(4900, 35, 5, 100);
+	          break;
+	        case 2:
 	        //Disabled
 			//the rainbow hues are HSV 0 - 65536 fill each
 			//pixel in the strip with the next hue & keep increasing
