@@ -151,10 +151,13 @@ void loop() {
 	
 	    case 8:
 			//Have a note WHITE FADE
-			strip.fill(strip.Color(255,255,255),0,90);
+			// strip.fill(strip.Color(255,255,255),0,90);
+			// strip.show();
+			// delay(500);
+			// breathe(30,100,100);
+			strip.fill(strip.Color(0xf4,0x71,0x00),0,90);
 			strip.show();
-			delay(500);
-			breathe(30,100,100);
+			delay(100);
 		break;
 					
 		default:
