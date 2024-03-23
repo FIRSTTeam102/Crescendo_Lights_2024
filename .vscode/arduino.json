@@ -1,5 +1,0 @@
-{
-    "board": "arduino:avr:leonardo",
-    "sketch": "Crescendo_Lights_2024.ino",
-    "programmer": "avrisp"
-}
